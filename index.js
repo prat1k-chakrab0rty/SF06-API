@@ -34,6 +34,18 @@ app.get('/users/:id', async(req, res) => {
   }
 })
 
+app.get('/users/login/:passcode', async(req, res) => {
+  try {
+    const {passcode}=req.params;
+    const user = await User.find({passCode:passcode});
+    res.status(200).json({"isValid":true,"data":user});
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+})
+
 app.post('/users', async(req, res) => {
   try {
     const user = await User.create(req.body);

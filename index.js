@@ -41,9 +41,9 @@ app.get('/users/login/:passcode', async (req, res) => {
     const { passcode } = req.params;
     const user = await User.findOne({ passCode: passcode });
     if (user == null)
-      res.status(200).json({ "isValid": false, "data": null });
+      res.status(404).json({ "isValid": false, "data": null });
     else
-      res.status(404).json({ "isValid": true, "data": user });
+      res.status(200).json({ "isValid": true, "data": user });
   }
   catch (error) {
     console.log(error.message);

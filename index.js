@@ -129,6 +129,33 @@ app.delete('/transactions/:id', async(req, res) => {
   }
 })
 
+app.get('/transactions/byDate/:date', async(req, res) => {
+  try {
+    const {date}=req.params;
+    const transactions = await Transaction.find();
+    const transactionsByDate=transactions.filter(t=>t.timeStamp.toISOString().split('T')[0]==date);
+    res.status(200).json(transactionsByDate);
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+})
+
+app.get('/transactions/byWeek/:startDay/:endDay', async(req, res) => {
+  try {
+    const {startDay}=req.params;
+    const {endDay}=req.params;
+    const actualDay=new Date(endDay+"T23:59:59.000Z");
+    const transactions = await Transaction. find({ timeStamp: { $gte: startDay, $lte: actualDay } });
+    res.status(200).json(transactions);
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+})
+
 mongoose.connect('mongodb+srv://pratik:pratik123@deployments.yjqiwqf.mongodb.net/SF-06?retryWrites=true&w=majority'
 ).then(() => {
   console.log("The cloud DB is connected");

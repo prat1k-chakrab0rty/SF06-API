@@ -45,6 +45,31 @@ app.post('/users', async(req, res) => {
   }
 })
 
+app.put('/users/:id', async(req, res) => {
+  try {
+    const {id}=req.params;
+    const user = await User.findByIdAndUpdate(id,req.body);
+    const updatedUser=await User.findById(id);
+    res.status(200).json(updatedUser);
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+})
+
+app.delete('/users/:id', async(req, res) => {
+  try {
+    const {id}=req.params;
+    const user = await User.findByIdAndDelete(id);
+    res.status(200).json({message:"User has been deleted!"});
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+})
+
 app.post('/transactions', async(req, res) => {
   try {
     const transaction = await Transaction.create(req.body);
@@ -79,6 +104,30 @@ app.get('/transactions/:id', async(req, res) => {
   }
 })
 
+app.put('/transactions/:id', async(req, res) => {
+  try {
+    const {id}=req.params;
+    const transaction = await Transaction.findByIdAndUpdate(id,req.body);
+    const updatedTransactions=await Transaction.findById(id);
+    res.status(200).json(updatedTransactions);
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+})
+
+app.delete('/transactions/:id', async(req, res) => {
+  try {
+    const {id}=req.params;
+    const transaction = await Transaction.findByIdAndDelete(id);
+    res.status(200).json({message:"Transaction has been deleted!"});
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+})
 
 mongoose.connect('mongodb+srv://pratik:pratik123@deployments.yjqiwqf.mongodb.net/SF-06?retryWrites=true&w=majority'
 ).then(() => {

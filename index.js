@@ -1,11 +1,13 @@
 const express = require('express')
 const mongoose = require('mongoose');
+const cors = require('cors');
 const app = express()
 const port = 3000
 const User=require('./models/userModel');
 const Transaction=require('./models/transactionModel');
 
 app.use(express.json());
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.send('Welcome to SF06 API!')

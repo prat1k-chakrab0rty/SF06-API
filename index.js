@@ -101,7 +101,14 @@ app.post('/transactions', async (req, res) => {
 app.get('/transactions', async (req, res) => {
   try {
     const transactions = await Transaction.find();
-    res.status(200).json(transactions);
+    const transaction=JSON.parse(JSON.stringify(transactions));
+    var updatedTransactions=transaction.map((t)=>({...t,firstName:""}))
+    for (let index = 0; index < updatedTransactions.length; index++) {
+      const user=await User.findById(updatedTransactions[index].userId);
+      updatedTransactions[index].firstName=user.firstName;
+      
+    }
+    res.status(200).json(updatedTransactions);
   }
   catch (error) {
     console.log(error.message);

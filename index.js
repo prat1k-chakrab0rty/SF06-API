@@ -116,6 +116,25 @@ app.get('/transactions', async (req, res) => {
   }
 })
 
+app.get('/transactions/getBalance', async (req, res) => {
+  try {
+    const creditedTransaction = await Transaction.find({ isCredited: true });
+    var totalAmount=0;
+    creditedTransaction.forEach(t=>{
+      totalAmount+=t.amount;
+    });
+    const isPaidBackTransaction= await Transaction.find({isPaidBack:true});
+    isPaidBackTransaction.forEach(t=>{
+      totalAmount-=t.amount;
+    });
+    res.status(200).json(transaction);
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+})
+
 app.get('/transactions/:id', async (req, res) => {
   try {
     const { id } = req.params;

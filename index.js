@@ -127,7 +127,7 @@ app.get('/transactions/getBalance', async (req, res) => {
     isPaidBackTransaction.forEach(t=>{
       totalAmount-=t.amount;
     });
-    res.status(200).json(transaction);
+    res.status(200).json({balance:totalAmount});
   }
   catch (error) {
     console.log(error.message);

@@ -100,13 +100,13 @@ app.post('/transactions', async (req, res) => {
 
 app.get('/transactions', async (req, res) => {
   try {
-    const transactions = await Transaction.find();
-    const transaction=JSON.parse(JSON.stringify(transactions));
-    var updatedTransactions=transaction.map((t)=>({...t,firstName:""}))
+    const transactions = await Transaction.find({isCredited:false});
+    const transaction = JSON.parse(JSON.stringify(transactions));
+    var updatedTransactions = transaction.map((t) => ({ ...t, firstName: "" }))
     for (let index = 0; index < updatedTransactions.length; index++) {
-      const user=await User.findById(updatedTransactions[index].userId);
-      updatedTransactions[index].firstName=user.firstName;
-      
+      const user = await User.findById(updatedTransactions[index].userId);
+      updatedTransactions[index].firstName = user.firstName;
+
     }
     res.status(200).json(updatedTransactions);
   }
@@ -117,17 +117,23 @@ app.get('/transactions', async (req, res) => {
 })
 
 app.get('/transactions/getBalance', async (req, res) => {
+  const currentMonth = new Date().getMonth() + 1;
   try {
-    const creditedTransaction = await Transaction.find({ isCredited: true });
-    var totalAmount=0;
-    creditedTransaction.forEach(t=>{
-      totalAmount+=t.amount;
+    var creditedTransaction = await Transaction.find({ isCredited: true });
+    if (creditedTransaction.length > 0) {
+      creditedTransaction = creditedTransaction.filter((c) => {
+        return (c.timeStamp.toISOString().split('-')[1] == currentMonth)
+      })
+    }
+    var totalAmount = 0;
+    creditedTransaction.forEach(t => {
+      totalAmount += t.amount;
     });
-    const isPaidBackTransaction= await Transaction.find({isPaidBack:true});
-    isPaidBackTransaction.forEach(t=>{
-      totalAmount-=t.amount;
+    const isPaidBackTransaction = await Transaction.find({ isPaidBack: true });
+    isPaidBackTransaction.forEach(t => {
+      totalAmount -= t.amount;
     });
-    res.status(200).json({balance:totalAmount});
+    res.status(200).json({ balance: totalAmount });
   }
   catch (error) {
     console.log(error.message);

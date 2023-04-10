@@ -141,6 +141,27 @@ app.get('/transactions/getBalance', async (req, res) => {
   }
 })
 
+app.get('/transactions/getTotalCreditedAmount', async (req, res) => {
+  const currentMonth = new Date().getMonth() + 1;
+  try {
+    var creditedTransaction = await Transaction.find({ isCredited: true });
+    if (creditedTransaction.length > 0) {
+      creditedTransaction = creditedTransaction.filter((c) => {
+        return (c.timeStamp.toISOString().split('-')[1] == currentMonth)
+      })
+    }
+    var totalAmount = 0;
+    creditedTransaction.forEach(t => {
+      totalAmount += t.amount;
+    });
+    res.status(200).json({ amount: totalAmount });
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+})
+
 app.get('/transactions/:id', async (req, res) => {
   try {
     const { id } = req.params;

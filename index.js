@@ -181,7 +181,7 @@ app.get('/transactions/getDuesDetail', async (req, res) => {
         if (String(t.userId) == String(u._id))
           due += t.amount;
       });
-      result.push({ admin: admin._id, user: u._id, dueAmount: due });
+      result.push({ admin: admin.firstName, user: u.firstName, dueAmount: due });
     })
     res.status(200).json(result);
   }

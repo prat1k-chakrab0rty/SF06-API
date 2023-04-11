@@ -98,7 +98,7 @@ app.post('/transactions', async (req, res) => {
   }
 })
 
-app.get('/transactions/:type', async (req, res) => {
+app.get('/transactions/filter/:type', async (req, res) => {
   try {
     const { type } = req.params;
     var transactions = await Transaction.find({ isCredited: false });

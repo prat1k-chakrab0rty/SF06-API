@@ -100,7 +100,7 @@ app.post('/transactions', async (req, res) => {
 
 app.get('/transactions', async (req, res) => {
   try {
-    const transactions = await Transaction.find({isCredited:false});
+    const transactions = await Transaction.find({ isCredited: false });
     const transaction = JSON.parse(JSON.stringify(transactions));
     var updatedTransactions = transaction.map((t) => ({ ...t, firstName: "" }))
     for (let index = 0; index < updatedTransactions.length; index++) {
@@ -155,6 +155,35 @@ app.get('/transactions/getTotalCreditedAmount', async (req, res) => {
       totalAmount += t.amount;
     });
     res.status(200).json({ amount: totalAmount });
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+})
+
+app.get('/transactions/getDuesDetail', async (req, res) => {
+  const currentMonth = new Date().getMonth() + 1;
+  try {
+    var unPaidTransaction = await Transaction.find({ isPaidBack: false , isCredited : false });
+    if (unPaidTransaction.length > 0) {
+      unPaidTransaction = unPaidTransaction.filter((c) => {
+        return (c.timeStamp.toISOString().split('-')[1] == currentMonth)
+      })
+    }
+    var admin = await User.findOne({ isAdmin: true });
+    var nonAdmin = await User.find({ isAdmin: false });
+    var due;
+    var result = [];
+    nonAdmin.forEach((u) => {
+      due = 0;
+      unPaidTransaction.forEach(t => {
+        if (String(t.userId) == String(u._id))
+          due += t.amount;
+      });
+      result.push({ admin: admin._id, user: u._id, dueAmount: due });
+    })
+    res.status(200).json(result);
   }
   catch (error) {
     console.log(error.message);

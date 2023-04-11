@@ -98,9 +98,50 @@ app.post('/transactions', async (req, res) => {
   }
 })
 
-app.get('/transactions', async (req, res) => {
+app.get('/transactions/:type', async (req, res) => {
   try {
-    const transactions = await Transaction.find({ isCredited: false });
+    const { type } = req.params;
+    var transactions = await Transaction.find({ isCredited: false });
+    if (type == "day") {
+      var today = new Date();
+      var dd = String(today.getDate()).padStart(2, '0');
+      var mm = String(today.getMonth() + 1).padStart(2, '0');
+      var yyyy = today.getFullYear();
+      var todayDate = yyyy + '-' + mm + '-' + dd;
+      transactions = transactions.filter(t => {
+        var tranD = new Date(t.timeStamp);
+        return tranD.toISOString().split('T')[0] == todayDate
+      })
+    }
+    else if (type == "week") {
+      //Don't follow the DB timestamp time its not in local time it is 5.30 hours behind
+      var date1 = new Date();
+      var date2 = new Date();
+      date1.setDate(date1.getDate() - date1.getDay() + 1);
+      date2.setDate(date2.getDate() - date2.getDay() + 1);
+      var startDayOfWeek = date1;
+      date2.setDate(date2.getDate() + 7);
+      var endDayOfWeek = date2;
+      var ddS = String(startDayOfWeek.getDate()).padStart(2, '0');
+      var mmS = String(startDayOfWeek.getMonth()).padStart(2, '0');
+      var yyyyS = startDayOfWeek.getFullYear();
+      var ddE = String(endDayOfWeek.getDate()).padStart(2, '0');
+      var mmE = String(endDayOfWeek.getMonth()).padStart(2, '0');
+      var yyyyE = endDayOfWeek.getFullYear();
+      transactions = transactions.filter(t => {
+        var start = new Date(yyyyS, mmS, ddS);
+        var end = new Date(yyyyE, mmE, ddE);
+        var tranD = new Date(t.timeStamp);
+        return tranD> start && tranD < end
+      })
+    }
+    else if (type == "month") {
+      var today = new Date();
+      var mm = String(today.getMonth() + 1).padStart(2, '0');
+      transactions = transactions.filter(t => {
+        return t.timeStamp.toISOString().split('-')[1] == mm
+      })
+    }
     const transaction = JSON.parse(JSON.stringify(transactions));
     var updatedTransactions = transaction.map((t) => ({ ...t, firstName: "" }))
     for (let index = 0; index < updatedTransactions.length; index++) {
@@ -165,7 +206,7 @@ app.get('/transactions/getTotalCreditedAmount', async (req, res) => {
 app.get('/transactions/getDuesDetail', async (req, res) => {
   const currentMonth = new Date().getMonth() + 1;
   try {
-    var unPaidTransaction = await Transaction.find({ isPaidBack: false , isCredited : false });
+    var unPaidTransaction = await Transaction.find({ isPaidBack: false, isCredited: false });
     if (unPaidTransaction.length > 0) {
       unPaidTransaction = unPaidTransaction.filter((c) => {
         return (c.timeStamp.toISOString().split('-')[1] == currentMonth)

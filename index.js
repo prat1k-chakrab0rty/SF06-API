@@ -101,7 +101,7 @@ app.post('/transactions', async (req, res) => {
 app.get('/transactions/filter/:type', async (req, res) => {
   try {
     const { type } = req.params;
-    var transactions = await Transaction.find({ isCredited: false });
+    var transactions = await Transaction.find({ isCredited: false }).sort('timeStamp');
     if (type == "day") {
       var today = new Date();
       var dd = String(today.getDate()).padStart(2, '0');

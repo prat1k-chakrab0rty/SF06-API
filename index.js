@@ -132,7 +132,7 @@ app.get('/transactions/filter/:type', async (req, res) => {
         var start = new Date(yyyyS, mmS, ddS);
         var end = new Date(yyyyE, mmE, ddE);
         var tranD = new Date(t.timeStamp);
-        return tranD> start && tranD < end
+        return tranD > start && tranD < end
       })
     }
     else if (type == "month") {
@@ -170,10 +170,12 @@ app.get('/transactions/getBalance', async (req, res) => {
     creditedTransaction.forEach(t => {
       totalAmount += t.amount;
     });
-    const isPaidBackTransaction = await Transaction.find({ isPaidBack: false });
+    const isPaidBackTransaction = await Transaction.find({ isPaidBack: true });
     isPaidBackTransaction.forEach(t => {
-      totalAmount -= t.amount;
+      if (Number(t.timeStamp.toISOString().split('-')[1]) == currentMonth)
+        totalAmount -= t.amount;
     });
+    console.log(totalAmount);
     res.status(200).json({ balance: totalAmount });
   }
   catch (error) {

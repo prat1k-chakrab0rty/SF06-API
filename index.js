@@ -163,14 +163,14 @@ app.get('/transactions/getBalance', async (req, res) => {
     var creditedTransaction = await Transaction.find({ isCredited: true });
     if (creditedTransaction.length > 0) {
       creditedTransaction = creditedTransaction.filter((c) => {
-        return (c.timeStamp.toISOString().split('-')[1] == currentMonth)
+        return (Number(c.timeStamp.toISOString().split('-')[1]) == currentMonth)
       })
     }
     var totalAmount = 0;
     creditedTransaction.forEach(t => {
       totalAmount += t.amount;
     });
-    const isPaidBackTransaction = await Transaction.find({ isPaidBack: true });
+    const isPaidBackTransaction = await Transaction.find({ isPaidBack: false });
     isPaidBackTransaction.forEach(t => {
       totalAmount -= t.amount;
     });
@@ -256,6 +256,35 @@ app.put('/transactions/:id', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 })
+
+// app.put('/transactions/clearDues', async (req, res) => {
+//   const currentMonth = new Date().getMonth() + 1;
+//   try {
+//     var unPaidTransaction = await Transaction.find({ isPaidBack: false, isCredited: false });
+//     if (unPaidTransaction.length > 0) {
+//       unPaidTransaction = unPaidTransaction.filter((c) => {
+//         return (c.timeStamp.toISOString().split('-')[1] == currentMonth)
+//       })
+//     }
+//     var admin = await User.findOne({ isAdmin: true });
+//     var nonAdmin = await User.find({ isAdmin: false });
+//     var due;
+//     var result = [];
+//     nonAdmin.forEach((u) => {
+//       due = 0;
+//       unPaidTransaction.forEach(t => {
+//         if (String(t.userId) == String(u._id))
+//           due += t.amount;
+//       });
+//       result.push({ admin: admin.firstName, user: u.firstName, dueAmount: due });
+//     })
+//     res.status(200).json(result);
+//   }
+//   catch (error) {
+//     console.log(error.message);
+//     res.status(500).json({ message: error.message });
+//   }
+// })
 
 app.delete('/transactions/:id', async (req, res) => {
   try {

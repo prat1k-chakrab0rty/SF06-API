@@ -80,17 +80,29 @@ app.delete('/users/:id', async (req, res) => {
     const { id } = req.params;
     const user = await User.findByIdAndDelete(id);
     res.status(200).json({ message: "User has been deleted!" });
-  }
+  } 
   catch (error) {
     console.log(error.message);
     res.status(500).json({ message: error.message });
   }
 })
 
-app.post('/transactions', async (req, res) => {
+app.post('/transactions/', async (req, res) => {
   try {
     const transaction = await Transaction.create(req.body);
     res.status(200).json(transaction);
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+})
+app.put('/transactions/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const transaction = await Transaction.findByIdAndUpdate(id, req.body);
+    const updatedTransaction = await Transaction.findById(id);
+    res.status(200).json(updatedTransaction);
   }
   catch (error) {
     console.log(error.message);

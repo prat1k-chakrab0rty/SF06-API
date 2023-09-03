@@ -327,6 +327,20 @@ app.get('/transactions/byWeek/:startDay/:endDay', async (req, res) => {
   }
 })
 
+app.get('/transactions/getCredits/currentMonth', async (req, res) => {
+  try {
+    const today=new Date();
+    const firstDateOfMonth=new Date(today.getFullYear(),today.getMonth(),1);
+    //issue with date time check the firstDayOfMonth in console log.
+    const creditedTransactions = await Transaction.find({ isCredited:true , timeStamp:{$gte:firstDateOfMonth} });
+    res.status(200).json(creditedTransactions);
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+})
+
 mongoose.connect('mongodb+srv://pratik:pratik123@deployments.yjqiwqf.mongodb.net/SF-06?retryWrites=true&w=majority'
 ).then(() => {
   console.log("The cloud DB is connected");

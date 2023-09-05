@@ -215,10 +215,10 @@ app.get('/transactions/getDuesDetail', async (req, res) => {
       })
     }
     var admin = await User.findOne({ isAdmin: true });
-    var nonAdmin = await User.find({ isAdmin: false });
+    var allUser = await User.find();
     var due;
     var result = [];
-    nonAdmin.forEach((u) => {
+    allUser.forEach((u) => {
       due = 0;
       unPaidTransaction.forEach(t => {
         if (String(t.userId) == String(u._id))

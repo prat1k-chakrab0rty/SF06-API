@@ -233,6 +233,17 @@ app.get('/transactions/getDuesDetail', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 })
+app.put('/transactions/clearDues/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    var clearDuesForUser = await Transaction.updateMany({ isPaidBack: false, isCredited: false,userId },{"$set":{"isPaidBack": true}});
+    res.status(200).json("Dues Cleared For The User");
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+})
 
 app.get('/transactions/:id', async (req, res) => {
   try {

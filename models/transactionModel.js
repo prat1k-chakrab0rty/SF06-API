@@ -17,7 +17,7 @@ const transactionSchema=mongoose.Schema({
     timeStamp:{
         type:Date,
         required:true,
-        default:Date.now()
+        default:new Date(2023,11,new Date().getDate())
     },
     isCredited:{
         type:Boolean,

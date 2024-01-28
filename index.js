@@ -103,7 +103,7 @@ app.get('/transactions/filter/:type', async (req, res) => {
     const { type } = req.params;
     var transactions = await Transaction.find({ isCredited: false }).sort('timeStamp');
     if (type == "day") {
-      var today = new Date();
+      var today = new Date(2023,11-22);
       var dd = String(today.getDate()).padStart(2, '0');
       var mm = String(today.getMonth() + 1).padStart(2, '0');
       var yyyy = today.getFullYear();
@@ -136,7 +136,7 @@ app.get('/transactions/filter/:type', async (req, res) => {
       })
     }
     else if (type == "month") {
-      var today = new Date();
+      var today = new Date(2023,11,22);
       var mm = String(today.getMonth() + 1).padStart(2, '0');
       transactions = transactions.filter(t => {
         return t.timeStamp.toISOString().split('-')[1] == mm
@@ -158,7 +158,7 @@ app.get('/transactions/filter/:type', async (req, res) => {
 })
 
 app.get('/transactions/getBalance', async (req, res) => {
-  const currentMonth = new Date().getMonth() + 1;
+  const currentMonth = 12;
   try {
     var creditedTransaction = await Transaction.find({ isCredited: true });
     if (creditedTransaction.length > 0) {
@@ -185,7 +185,7 @@ app.get('/transactions/getBalance', async (req, res) => {
 })
 
 app.get('/transactions/getTotalCreditedAmount', async (req, res) => {
-  const currentMonth = new Date().getMonth() + 1;
+  const currentMonth = 12;
   try {
     var creditedTransaction = await Transaction.find({ isCredited: true });
     if (creditedTransaction.length > 0) {
@@ -206,7 +206,7 @@ app.get('/transactions/getTotalCreditedAmount', async (req, res) => {
 })
 
 app.get('/transactions/getDuesDetail', async (req, res) => {
-  const currentMonth = new Date().getMonth() + 1;
+  const currentMonth = 12;
   try {
     var unPaidTransaction = await Transaction.find({ isPaidBack: false, isCredited: false });
     if (unPaidTransaction.length > 0) {
@@ -341,7 +341,7 @@ app.get('/transactions/byWeek/:startDay/:endDay', async (req, res) => {
 app.get('/transactions/getCredits/currentMonth', async (req, res) => {
   try {
     const today=new Date();
-    const firstDateOfMonth=new Date(today.getFullYear(),today.getMonth(),1);
+    const firstDateOfMonth=new Date(2023,11,1);
     //issue with date time check the firstDayOfMonth in console log.
     const creditedTransactions = await Transaction.find({ isCredited:true , timeStamp:{$gte:firstDateOfMonth} });
     res.status(200).json(creditedTransactions);
